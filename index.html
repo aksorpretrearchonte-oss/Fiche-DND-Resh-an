@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resh’an — Fiche D&D</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="hero">
+      <div class="hero-decoration left" aria-hidden="true">✦</div>
+      <div class="hero-content">
+        <div class="eyebrow">D&D • GRIM HOLLOW</div>
+        <h1>Resh’an</h1>
+        <div class="identity-line">Réincarné (Drakéide) · Ensorceleur · Maudit · Niveau 3</div>
+        <div class="identity-subline">Agent of the Augustine · Chaotique bon</div>
+      </div>
+      <div class="hero-decoration right" aria-hidden="true">✦</div>
+    </header>
+
+    <section class="top-stats panel">
+      <div class="top-stat"><span>Niveau</span><strong id="levelValue">3</strong></div>
+      <div class="top-stat"><span>Bonus de maîtrise</span><strong id="pbValue">+2</strong></div>
+      <div class="top-stat"><span>Taille</span><strong>1,75 m</strong></div>
+      <div class="top-stat"><span>Vitesse</span><strong>9 m</strong></div>
+      <div class="top-stat"><span>Dé de vie</span><strong>3d6</strong></div>
+      <div class="top-stat"><span>Armure</span><strong>Aucune</strong></div>
+    </section>
+
+    <div class="columns">
+      <!-- LEFT -->
+      <main class="left-column">
+
+        <section class="panel">
+          <div class="section-title-row">
+            <h2>Caractéristiques</h2>
+            <span class="hint">+ / − modifient le score brut</span>
+          </div>
+          <div class="ability-grid" id="abilityGrid"></div>
+        </section>
+
+        <section class="panel combat-panel">
+          <div class="section-title-row"><h2>Combat</h2><span class="tag">LIVE</span></div>
+          <div class="combat-grid">
+            <div class="resource-card hp-card">
+              <div class="resource-label">Points de vie</div>
+              <div class="big-number" id="hpValue">20</div>
+              <div class="of">/ <span id="hpMaxValue">20</span></div>
+              <div class="button-row">
+                <button class="round-btn danger" data-action="hp-minus">−</button>
+                <button class="round-btn" data-action="hp-plus">+</button>
+              </div>
+              <div class="bar"><div id="hpBar" class="bar-fill"></div></div>
+            </div>
+
+            <div class="resource-card">
+              <div class="resource-label">Classe d’armure</div>
+              <div class="big-number" id="acValue">10</div>
+              <div class="small-note" id="acModeLabel">Mode manuel</div>
+              <div class="button-row">
+                <button class="round-btn" data-action="ac-minus">−</button>
+                <button class="round-btn" data-action="ac-plus">+</button>
+              </div>
+              <button class="secondary-btn" data-action="mage-armor">Activer Mage Armor</button>
+              <div class="inline-control">
+                <label for="shieldBonus">Bouclier</label>
+                <input id="shieldBonus" type="number" min="0" max="5" value="0">
+              </div>
+              <button class="tiny-btn" data-action="ac-auto">↺ Recalcul automatique</button>
+            </div>
+
+            <div class="resource-card">
+              <div class="resource-label">Initiative</div>
+              <div class="big-number" id="initiativeValue">+7</div>
+              <div class="small-note">DEX + Sixth Sense + Quick Initiative</div>
+              <div class="button-row">
+                <button class="round-btn" data-action="init-minus">−</button>
+                <button class="round-btn" data-action="init-plus">+</button>
+              </div>
+              <button class="tiny-btn" data-action="init-auto">↺ Recalcul automatique</button>
+            </div>
+
+            <div class="resource-card">
+              <div class="resource-label">DD des sorts</div>
+              <div class="big-number" id="spellDcValue">13</div>
+              <div class="small-note">8 + maîtrise + CHA</div>
+            </div>
+
+            <div class="resource-card">
+              <div class="resource-label">Attaque de sort</div>
+              <div class="big-number" id="spellAttackValue">+5</div>
+              <div class="small-note">maîtrise + CHA</div>
+            </div>
+
+            <div class="resource-card">
+              <div class="resource-label">Dés de vie</div>
+              <div class="big-number" id="hitDiceValue">3 / 3</div>
+              <div class="button-row">
+                <button class="round-btn" data-action="hd-minus">−</button>
+                <button class="round-btn" data-action="hd-plus">+</button>
+              </div>
+              <div class="small-note">d6 · récupérés avec les règles de repos</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="section-title-row">
+            <h2>Jets de sauvegarde</h2>
+            <span class="hint">calculés automatiquement</span>
+          </div>
+          <div id="saveGrid" class="modifier-list"></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-title-row">
+            <h2>Compétences</h2>
+            <span class="hint">proficiences prises en compte</span>
+          </div>
+          <div id="skillGrid" class="modifier-list"></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-title-row"><h2>Sorts</h2><span class="tag">CHA</span></div>
+          <div class="spell-summary">
+            <div><span>DD</span><strong id="spellDcSmall">13</strong></div>
+            <div><span>Attaque</span><strong id="spellAttackSmall">+5</strong></div>
+            <div><span>Sorts préparés</span><strong>6</strong></div>
+          </div>
+
+          <details open>
+            <summary>Cantrips <span>5</span></summary>
+            <div id="cantripList" class="spell-list"></div>
+          </details>
+
+          <details>
+            <summary>Niveau 1 <span>6</span></summary>
+            <div id="level1List" class="spell-list"></div>
+          </details>
+
+          <details>
+            <summary>Niveau 2 <span>4</span></summary>
+            <div id="level2List" class="spell-list"></div>
+          </details>
+        </section>
+
+        <section class="panel">
+          <div class="section-title-row"><h2>Emplacements de sorts</h2><span class="hint">clique un cercle pour le dépenser</span></div>
+          <div class="slot-row">
+            <div class="slot-label">Niveau 1 <strong>4</strong></div>
+            <div id="slots1" class="slots"></div>
+          </div>
+          <div class="slot-row">
+            <div class="slot-label">Niveau 2 <strong>2</strong></div>
+            <div id="slots2" class="slots"></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="section-title-row"><h2>Points de sorcellerie</h2><span class="hint">3 max.</span></div>
+          <div id="sorceryPoints" class="slots large"></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-title-row"><h2>Métamagie</h2></div>
+          <details>
+            <summary>Heightened Spell <span>2 points</span></summary>
+            <div class="description">
+              <p><b>Cost: 2 Sorcery Points</b></p>
+              <p>When you cast a spell that forces a creature to make a saving throw, you can spend 2 Sorcery Points to give one target of the spell Disadvantage on saves against the spell.</p>
+            </div>
+          </details>
+          <details>
+            <summary>Twinned Spell <span>1 point</span></summary>
+            <div class="description">
+              <p><b>Cost: 1 Sorcery Point</b></p>
+              <p>When you cast a spell, such as <i>Charm Person</i>, that can be cast with a higher-level spell slot to target an additional creature, you can spend 1 Sorcery Point to increase the spell’s effective level by 1.</p>
+            </div>
+          </details>
+        </section>
+      </main>
+
+      <!-- RIGHT -->
+      <aside class="right-column">
+        <section class="panel">
+          <div class="section-title-row"><h2>Repos</h2></div>
+          <div class="rest-buttons">
+            <button class="rest-btn short" data-action="short-rest">
+              <span>☾</span><b>Short Rest</b><small>Ressources de repos court + récupération normale</small>
+            </button>
+            <button class="rest-btn long" data-action="long-rest">
+              <span>✦</span><b>Long Rest</b><small>Restaure les ressources prévues + emplacements + PV</small>
+            </button>
+          </div>
+          <div class="rest-note">Power Nap reste volontaire : le bouton Short Rest ne l’active pas automatiquement.</div>
+        </section>
+
+        <section class="panel">
+          <div class="section-title-row"><h2>Capacités & traits</h2></div>
+
+          <details open>
+            <summary>Ensorceleur</summary>
+            <div class="feature-card">
+              <div class="feature-head"><h3>Innate Sorcery</h3><span class="uses" id="innateUses">2 / 2</span></div>
+              <p>An event in your past left an indelible mark on you, infusing you with a simmering magic. As a Bonus Action, you can unleash that magic for 1 minute, during which you gain the following benefits:</p>
+              <ul>
+                <li>The spell save DC of your Sorcerer spells increases by 1.</li>
+                <li>You have Advantage on the attack rolls of Sorcerer spells you cast.</li>
+              </ul>
+              <p>You can use this feature twice, and you regain all expended uses of it when you finish a Long Rest.</p>
+              <button class="use-btn" data-resource="innate">Dépenser 1 utilisation</button>
+            </div>
+          </details>
+
+          <details>
+            <summary>Font of Magic</summary>
+            <div class="description">
+              <p>You can use your Sorcery Points to fuel the options below, along with other features, such as Metamagic, that use those points.</p>
+              <p><b>Converting Spell Slots to Sorcery Points.</b> You can expend a spell slot to gain a number of Sorcery Points equal to the slot’s level (no action required).</p>
+              <p><b>Creating Spell Slots.</b> As a Bonus Action, you can transform unexpended Sorcery Points into one spell slot. The Creating Spell Slots table shows the cost of creating a spell slot of a given level, and it lists the minimum Sorcerer level you must be to create a slot. You can create a spell slot no higher in level than 5.</p>
+              <div class="mini-table">
+                <div><span>Spell Slot</span><span>Sorcery Point Cost</span><span>Min. Sorcerer Level</span></div>
+                <div><span>1</span><span>2</span><span>2</span></div>
+                <div><span>2</span><span>3</span><span>3</span></div>
+                <div><span>3</span><span>5</span><span>5</span></div>
+                <div><span>4</span><span>6</span><span>7</span></div>
+                <div><span>5</span><span>7</span><span>9</span></div>
+              </div>
+              <p>Any spell slot you create with this feature vanishes when you finish a Long Rest.</p>
+            </div>
+          </details>
+
+          <details>
+            <summary>Maudit — Sixth Sense</summary>
+            <div class="description">
+              <p>When you roll Initiative, you can add your Charisma modifier to the roll.</p>
+            </div>
+          </details>
+
+          <details>
+            <summary>Maudit — Phantom Companion</summary>
+            <div class="description">
+              <p>You learn the Find Familiar spell and can cast it as a Magic action without expending a spell slot. The familiar takes the form of a Specter, though it is an Undead instead of a Celestial, Fey, or Fiend. As a Magic action, you can command your phantom companion to gain the Invisible condition until it attacks or you cast a spell through it. While Invisible, it leaves no physical evidence of its passage and can be tracked only by magic. Any equipment or objects it is holding remains visible. Additionally, when you take the Attack action, you can forgo one of your own attacks to allow your familiar to make its Life Drain attack with its Reaction.</p>
+              <button class="secondary-btn" data-action="show-specter">Voir le Specter</button>
+            </div>
+          </details>
+        </section>
+
+        <section class="panel">
+          <div class="section-title-row"><h2>Traits de Réincarné</h2><span class="hint">texte fourni</span></div>
+
+          <details>
+            <summary>Ethereal Fade <span>Exploration</span></summary>
+            <div class="description">
+              <p>Shifting away from the mortal world lets you move through and stay above what world unseen. As a Magic action, you fade from the Material Plane into the Ethereal Plane for 1 minute. While you remain in this state, you can’t interact with the Material Plane, and effects on the Material Plane can’t affect you, including spells and creatures. You can move and hear as normal, and you can explore unseen in shades of gray. When the effect ends, you reappear in the Material Plane in the closest unoccupied space to where you faded from. You can end the effect early as a Bonus Action. You regain the use of this feature again when you finish a Long Rest.</p>
+              <button class="use-btn" data-resource="ethereal">Dépenser l’utilisation</button>
+              <span class="resource-status" id="etherealStatus">1 / 1</span>
+            </div>
+          </details>
+
+          <details>
+            <summary>Power Nap <span>Exploration</span></summary>
+            <div class="description">
+              <p>When you don’t know how long it might be before your next full rest, you learn to take maximum advantage of any rest you can get. When taking a Short Rest, you can choose to sleep for 1 hour. If you do so, you reduce your Exhaustion by one level and regain a Hit Point Die in addition to the other benefits of a Short Rest.</p>
+              <button class="secondary-btn" data-action="power-nap">Faire un Power Nap</button>
+            </div>
+          </details>
+
+          <details>
+            <summary>Extreme Resilience <span>Exploration</span></summary>
+            <div class="description">
+              <p>If you take this trait twice, when using Power Nap, you can choose to regain a single resource that would normally refresh on a Long Rest. For example, a Sorcerer could choose to regain a Sorcery Point on a Short Rest.</p>
+              <p class="warning">Tu ne possèdes ce trait qu’une fois : l’effet « trait pris deux fois » n’est donc pas actif.</p>
+            </div>
+          </details>
+
+          <details>
+            <summary>Quick Initiative <span>Combat</span></summary>
+            <div class="description">
+              <p>Danger is never far away from you, and you are always ready for it. You add your Proficiency Bonus to your Initiative rolls.</p>
+            </div>
+          </details>
+
+          <details>
+            <summary>Out of Phase <span>Combat</span> <span class="uses" id="phaseUses">2 / 2</span></summary>
+            <div class="description">
+              <p>Your corporeal presence shifts and fades, softening your enemies’ ability to harm you. As a Bonus Action, for 1 minute, all creatures have Disadvantage on attack rolls against you, and you can move through other creatures’ spaces without treating them as Difficult Terrain. You can use this feature a number of times equal to your Proficiency Bonus, regaining all expended uses when you finish a Long Rest.</p>
+              <button class="use-btn" data-resource="phase">Dépenser 1 utilisation</button>
+            </div>
+          </details>
+
+          <details>
+            <summary>Magical Fortification <span>Wisdom</span></summary>
+            <div class="description">
+              <p>The more that magic threatens you, the more your resilience to it increases. Choose an ability score: Strength, Dexterity, Constitution, Intelligence, Wisdom, or Charisma. You have Advantage on saving throws using that ability score against spells and other magical effects.</p>
+              <p class="chosen">Score choisi : Wisdom.</p>
+            </div>
+          </details>
+
+          <details>
+            <summary>Relentless Endurance <span>Combat</span> <span class="uses" id="relentlessStatus">1 / 1</span></summary>
+            <div class="description">
+              <p>The battles you need yet to fight are many, and death is not an option. When you are reduced to 0 Hit Points but not killed outright, you can drop to 1 Hit Point instead. You regain the use of this feature when you finish a Long Rest.</p>
+              <button class="use-btn" data-resource="relentless">Dépenser l’utilisation</button>
+            </div>
+          </details>
+
+          <details>
+            <summary>Masterful Aptitude <span>Alchemy tools</span></summary>
+            <div class="description">
+              <p>Your discipline and focus give you an edge that others lack. Choose one of your skill or tool proficiencies. You have Expertise on ability checks made using the chosen proficiency.</p>
+              <p class="chosen">Proficiency choisie : Alchemy tools.</p>
+            </div>
+          </details>
+        </section>
+
+        <section class="panel">
+          <div class="section-title-row"><h2>Équipement</h2><span class="hint">replié par défaut</span></div>
+          <details>
+            <summary>Armes & équipement</summary>
+            <div class="equipment-grid">
+              <div><span>Armures</span><b>Aucune</b></div>
+              <div><span>Armes</span><b>Armes simples</b></div>
+              <div><span>Outils</span><b>Alchemy tools (Expertise)</b></div>
+            </div>
+            <div class="empty-equipment">
+              Ajoute ici tes objets, potions, composants ou butin. Cette zone est volontairement vide pour éviter d’inventer ton inventaire.
+            </div>
+          </details>
+        </section>
+
+        <section class="panel">
+          <div class="section-title-row"><h2>Repos & état</h2></div>
+          <div id="log" class="log">
+            <div>Fiche chargée. Les modifications sont sauvegardées automatiquement dans ce navigateur.</div>
+          </div>
+          <button class="tiny-btn" data-action="reset-sheet">Réinitialiser les ressources</button>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Spell / Specter modal -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-backdrop" data-action="close-modal"></div>
+    <div class="modal-card">
+      <button class="modal-close" data-action="close-modal">×</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
