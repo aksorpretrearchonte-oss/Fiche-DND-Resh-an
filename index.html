@@ -35,13 +35,13 @@
         <section class="panel">
           <div class="section-title-row">
             <h2>Caractéristiques</h2>
-            <span class="hint">+ / − modifient le score brut</span>
+            
           </div>
           <div class="ability-grid" id="abilityGrid"></div>
         </section>
 
         <section class="panel combat-panel">
-          <div class="section-title-row"><h2>Combat</h2><span class="tag">LIVE</span></div>
+          <div class="section-title-row"><h2>Combat</h2></div>
           <div class="combat-grid">
             <div class="resource-card hp-card">
               <div class="resource-label">Points de vie</div>
@@ -67,12 +67,8 @@
               <div class="resource-label">Concentration</div>
               <div class="concentration-status" id="concentrationStatus">Inactive</div>
               <button class="secondary-btn" data-action="toggle-concentration">Activer</button>
-              <div class="inline-control">
-                <label for="concentrationDamage">Dégâts subis</label>
-                <input id="concentrationDamage" type="number" min="0" value="10">
-              </div>
               <button class="use-btn" data-action="concentration-check">🎲 Tester la concentration</button>
-              <div class="small-note" id="concentrationResult">DD 10 minimum · Constitution +4</div>
+              <div class="small-note" id="concentrationResult">Le bouton te demandera les dégâts subis.</div>
             </div>
 
             <div class="resource-card">
@@ -129,7 +125,7 @@
         <section class="panel">
           <div class="section-title-row">
             <h2>Jets de sauvegarde</h2>
-            <span class="hint">calculés automatiquement</span>
+            
           </div>
           <div id="saveGrid" class="modifier-list"></div>
         </section>
@@ -137,13 +133,13 @@
         <section class="panel">
           <div class="section-title-row">
             <h2>Compétences</h2>
-            <span class="hint">proficiences prises en compte</span>
+            
           </div>
           <div id="skillGrid" class="modifier-list"></div>
         </section>
 
         <section class="panel">
-          <div class="section-title-row"><h2>Sorts</h2><span class="tag">CHA</span></div>
+          <div class="section-title-row"><h2>Sorts</h2></div>
           <div class="spell-summary">
             <div><span>DD</span><strong id="spellDcSmall">13</strong></div>
             <div><span>Attaque</span><strong id="spellAttackSmall">+5</strong></div>
@@ -167,7 +163,7 @@
         </section>
 
         <section class="panel">
-          <div class="section-title-row"><h2>Emplacements de sorts</h2><span class="hint">clique un cercle pour le dépenser</span></div>
+          <div class="section-title-row"><h2>Emplacements de sorts</h2></div>
           <div class="slot-row">
             <div class="slot-label">Niveau 1 <strong>4</strong></div>
             <div id="slots1" class="slots"></div>
@@ -179,7 +175,7 @@
         </section>
 
         <section class="panel">
-          <div class="section-title-row"><h2>Points de sorcellerie</h2><span class="hint">3 max.</span></div>
+          <div class="section-title-row"><h2>Points de sorcellerie</h2></div>
           <div id="sorceryPoints" class="slots large"></div>
         </section>
 
@@ -221,7 +217,7 @@
           <div class="section-title-row"><h2>Capacités & traits</h2></div>
 
           <details open>
-            <summary>Ensorceleur</summary>
+            <summary>Innate Sorcery</summary>
             <div class="feature-card">
               <div class="feature-head"><h3>Innate Sorcery</h3><span class="uses" id="innateUses">2 / 2</span></div>
               <p>An event in your past left an indelible mark on you, infusing you with a simmering magic. As a Bonus Action, you can unleash that magic for 1 minute, during which you gain the following benefits:</p>
@@ -269,7 +265,7 @@
         </section>
 
         <section class="panel">
-          <div class="section-title-row"><h2>Phantom Companion — Specter</h2><span class="hint">suivi rapide</span></div>
+          <div class="section-title-row"><h2>Phantom Companion — Specter</h2></div>
           <div class="specter-mini">
             <div class="specter-mini-head">
               <div><strong>Specter</strong><span>Medium undead · chaotic evil</span></div>
@@ -299,7 +295,7 @@
         </section>
 
         <section class="panel">
-          <div class="section-title-row"><h2>Traits de Réincarné</h2><span class="hint">texte fourni</span></div>
+          <div class="section-title-row"><h2>Heritage Traits</h2></div>
 
           <details>
             <summary>Ethereal Fade <span>Exploration</span></summary>
@@ -366,8 +362,19 @@
           </details>
         </section>
 
+        <section class="panel money-panel">
+          <div class="section-title-row"><h2>Argent</h2></div>
+          <div class="money-grid">
+            <div class="money-item"><span>PP</span><button class="round-btn" data-money="pp" data-delta="-1">−</button><strong id="money-pp">0</strong><button class="round-btn" data-money="pp" data-delta="1">+</button></div>
+            <div class="money-item"><span>GP</span><button class="round-btn" data-money="gp" data-delta="-1">−</button><strong id="money-gp">0</strong><button class="round-btn" data-money="gp" data-delta="1">+</button></div>
+            <div class="money-item"><span>SP</span><button class="round-btn" data-money="sp" data-delta="-1">−</button><strong id="money-sp">0</strong><button class="round-btn" data-money="sp" data-delta="1">+</button></div>
+            <div class="money-item"><span>BP</span><button class="round-btn" data-money="bp" data-delta="-1">−</button><strong id="money-bp">0</strong><button class="round-btn" data-money="bp" data-delta="1">+</button></div>
+          </div>
+          <div class="money-subtitle">PP = Platinum · GP = Gold · SP = Silver · BP = Bronze</div>
+        </section>
+
         <section class="panel">
-          <div class="section-title-row"><h2>Équipement</h2><span class="hint">replié par défaut</span></div>
+          <div class="section-title-row"><h2>Équipement</h2></div>
           <details>
             <summary>Armes</summary>
             <div id="weaponList" class="inventory-list"></div>

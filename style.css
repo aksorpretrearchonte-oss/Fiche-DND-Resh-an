@@ -400,3 +400,13 @@ summary span { color:var(--muted); font-size:.72rem; font-weight:500; margin-lef
 .pack-help { border-top:1px solid var(--line); padding-top:8px; }
 @media (max-width:800px) { .specter-mini-grid { grid-template-columns:repeat(3,1fr); } .inventory-row { grid-template-columns:1fr auto; } .inventory-stat { grid-column:auto; } }
 @media (max-width:560px) { .specter-mini-grid { grid-template-columns:repeat(2,1fr); } }
+
+/* --- V3 : argent --- */
+.money-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:9px; }
+.money-item { display:grid; grid-template-columns:auto 28px minmax(24px,1fr) 28px; align-items:center; gap:6px; background:var(--panel-2); border:1px solid var(--line); border-radius:10px; padding:8px; }
+.money-item > span { font-weight:800; font-size:.82rem; }
+.money-item > strong { text-align:center; font-size:1rem; }
+.money-item .round-btn { width:28px; height:28px; font-size:1rem; }
+.money-subtitle { margin-top:8px; text-align:center; color:var(--muted); font-size:.68rem; }
+@media (max-width:800px) { .money-grid { grid-template-columns:repeat(2,1fr); } }
+@media (max-width:560px) { .money-grid { grid-template-columns:1fr 1fr; } }

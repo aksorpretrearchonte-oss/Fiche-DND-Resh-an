@@ -36,8 +36,8 @@ const state = {
   innate: 2, phase: 2, ethereal: 1, relentless: 1,
   deathSaves: { successes: 0, failures: 0 },
   concentration: false,
-  concentrationDamage: 10,
   specterHp: 22, specterHpMax: 22,
+  money: { pp: 0, gp: 0, sp: 0, bp: 0 },
   inventory: {
     weapons: [
       { name: "Spear", count: 1, meta: "Thrown / Versatile", attack: "+1", damage: "1d6", help: "Thrown / Versatile" },
@@ -145,10 +145,12 @@ function renderDerived() {
   document.getElementById("spellAttackValue").textContent = signed(attack);
   document.getElementById("spellDcSmall").textContent = dc;
   document.getElementById("spellAttackSmall").textContent = signed(attack);
+  const mageButton=document.querySelector('[data-action="mage-armor"]');
   if (state.acAuto) {
     state.ac = (state.mageArmor ? 13 : 10) + dex + Number(state.shieldBonus || 0);
     document.getElementById("acModeLabel").textContent = state.mageArmor ? "Automatique · Mage Armor" : "Automatique · base";
   } else document.getElementById("acModeLabel").textContent = "Mode manuel";
+  if(mageButton) mageButton.textContent = state.mageArmor ? "Retirer Mage Armor" : "Activer Mage Armor";
   document.getElementById("acValue").textContent = state.ac;
   document.getElementById("initiativeValue").textContent = signed(state.initiative);
   document.getElementById("hpValue").textContent = state.hp;
@@ -159,7 +161,7 @@ function renderDerived() {
   document.getElementById("phaseUses").textContent = `${state.phase} / 2`;
   document.getElementById("etherealStatus").textContent = `${state.ethereal} / 1`;
   document.getElementById("relentlessStatus").textContent = `${state.relentless} / 1`;
-  renderDeathSaves(); renderConcentration(); renderSpecter();
+  renderDeathSaves(); renderConcentration(); renderSpecter(); renderMoney();
 }
 
 function renderDeathSaves() {
@@ -180,7 +182,6 @@ function renderConcentration() {
   status.textContent = state.concentration ? "ACTIVE" : "Inactive";
   status.className = `concentration-status ${state.concentration ? "active" : ""}`;
   button.textContent = state.concentration ? "Arrêter la concentration" : "Activer";
-  document.getElementById("concentrationDamage").value = state.concentrationDamage;
 }
 
 function renderSpecter() {
@@ -215,6 +216,13 @@ function renderInventoryList(id, list, type) {
     </div>`).join("");
 }
 
+function renderMoney() {
+  ["pp","gp","sp","bp"].forEach(key => {
+    const el = document.getElementById(`money-${key}`);
+    if (el) el.textContent = state.money[key];
+  });
+}
+
 function renderInventory() {
   renderInventoryList("weaponList",state.inventory.weapons,"weapons");
   renderInventoryList("itemList",state.inventory.items,"items");
@@ -238,16 +246,18 @@ function longRest(){
 function resetSheet(){localStorage.removeItem(STORAGE_KEY);location.reload();}
 function rollD20(){return Math.floor(Math.random()*20)+1;}
 function concentrationCheck(){
-  const damage=Math.max(0,Number(state.concentrationDamage)||0), dc=Math.max(10,Math.floor(damage/2)), roll=rollD20(), total=roll+mod(abilities.CON.score), success=total>=dc;
+  const raw=prompt("Combien de dégâts as-tu subis ?", "10");
+  if(raw===null) return;
+  const damage=Math.max(0,Number(raw)||0), dc=Math.max(10,Math.ceil(damage/2)), roll=rollD20(), total=roll+mod(abilities.CON.score), success=total>=dc;
   document.getElementById("concentrationResult").textContent=`d20 ${roll} + CON ${signed(mod(abilities.CON.score))} = ${total} · DD ${dc} · ${success?"CONCENTRATION MAINTENUE ✓":"CONCENTRATION PERDUE ✗"}`;
   log(`Test de concentration : ${total} contre DD ${dc} — ${success?"réussi":"échoué"}.`);
   if(!success) state.concentration=false; save(); renderConcentration();
 }
+
 function showModal(html){document.getElementById("modalContent").innerHTML=html;document.getElementById("modal").classList.remove("hidden");}
 
 load();
 document.getElementById("shieldBonus").value=state.shieldBonus;
-document.getElementById("concentrationDamage").value=state.concentrationDamage;
 renderAll();
 
 document.addEventListener("click",e=>{
@@ -259,7 +269,7 @@ document.addEventListener("click",e=>{
       case "ac-minus":if(!state.acAuto)state.ac--;break;
       case "ac-plus":if(!state.acAuto)state.ac++;break;
       case "ac-auto":state.acAuto=true;state.mageArmor=false;break;
-      case "mage-armor":state.acAuto=true;state.mageArmor=true;break;
+      case "mage-armor":state.acAuto=true;state.mageArmor=!state.mageArmor;break;
       case "init-minus":state.initiative--;state.initiativeAuto=false;break;
       case "init-plus":state.initiative++;state.initiativeAuto=false;break;
       case "init-auto":state.initiative=mod(abilities.DEX.score)+mod(abilities.CHA.score)+2;state.initiativeAuto=true;break;
@@ -291,8 +301,9 @@ document.addEventListener("click",e=>{
   const use=e.target.closest("[data-resource]");if(use){spend(use.dataset.resource);return;}
   const spell=e.target.closest("[data-spell]");if(spell){const [group,index]=spell.dataset.spell.split(":");const map={cantripList:"cantrips",level1List:"level1",level2List:"level2"};const s=spells[map[group]][Number(index)];showModal(`<h2>${s.name}</h2><div class="spell-meta">${s.meta}</div><div class="description"><p>${s.text}</p></div>`);return;}
   const help=e.target.closest("[data-item-help]");if(help){const [type,index]=help.dataset.itemHelp.split(":");const item=state.inventory[type][Number(index)];showModal(`<h2>${item.name}</h2><div class="description"><p>${item.help}</p></div>`);return;}
+  const money=e.target.closest("[data-money]");
+  if(money){const key=money.dataset.money,delta=Number(money.dataset.delta);state.money[key]=Math.max(0,state.money[key]+delta);save();renderMoney();return;}
   const inv=e.target.closest("[data-inv-type]");if(inv){const type=inv.dataset.invType,index=Number(inv.dataset.invIndex),delta=Number(inv.dataset.invDelta);state.inventory[type][index].count=Math.max(0,state.inventory[type][index].count+delta);save();renderInventory();return;}
 });
 
 document.getElementById("shieldBonus").addEventListener("input",e=>{state.shieldBonus=Math.max(0,Number(e.target.value)||0);save();renderDerived();});
-document.getElementById("concentrationDamage").addEventListener("input",e=>{state.concentrationDamage=Math.max(0,Number(e.target.value)||0);save();});
