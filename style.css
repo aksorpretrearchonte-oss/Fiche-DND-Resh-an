@@ -440,3 +440,89 @@ summary > .summary-title { margin-left:0; color:var(--text); font-size:inherit; 
 summary > .summary-right { margin-left:auto; color:var(--muted); }
 @media (max-width:1100px) { .rest-buttons { grid-template-columns:1fr 1fr; } .power-nap-btn { grid-column:1 / -1; min-height:70px; } }
 @media (max-width:900px) { .columns { grid-template-columns:1fr; } }
+
+
+/* --- V4.3 : alignements Heritage Traits + Dungeoneer's Pack --- */
+/* Les traits à compteur gardent exactement le même départ de titre que les autres résumés. */
+.resource-summary {
+  position:relative;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+.resource-summary .summary-title {
+  margin-left:0;
+  color:var(--text);
+  font-size:inherit;
+  font-weight:700;
+}
+.resource-summary .summary-counter {
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  margin-left:0;
+  color:var(--accent-2);
+  font-weight:700;
+}
+.resource-summary .summary-meta {
+  margin-left:auto;
+  color:var(--muted);
+}
+
+/* Pack : flèche à gauche, quantité centrée, nom principal aligné à droite comme Armes/Objets. */
+.pack-summary { position:relative; }
+.pack-summary .pack-count {
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  margin-left:0;
+  color:var(--muted);
+  font-size:.72rem;
+  font-weight:500;
+}
+.pack-summary .pack-title {
+  margin-left:auto;
+  color:var(--text);
+  font-size:inherit;
+  font-weight:700;
+}
+
+/* Tableau Haunted Spells : 2 colonnes lisibles, dans le style de Font of Magic. */
+.haunted-spells-table > div { grid-template-columns:110px minmax(0,1fr); }
+.haunted-spells-table > div span:last-child { text-align:left; line-height:1.35; }
+
+
+/* --- V4.4 : finitions d'alignement --- */
+/* Capacités & traits : titre immédiatement après la flèche, comme Heritage Traits. */
+.features-panel summary {
+  justify-content:flex-start;
+}
+
+/* Traits avec compteur : la flèche redevient un vrai élément du flux.
+   Cela donne exactement le même retrait de titre que les autres Heritage Traits. */
+.resource-summary::before {
+  position:static;
+  left:auto;
+  grid-column:auto;
+  flex:0 0 auto;
+  margin-right:7px;
+}
+.resource-summary .summary-title {
+  margin-left:0;
+  flex:0 1 auto;
+}
+.resource-summary .summary-meta {
+  margin-left:auto;
+}
+
+
+/* --- V4.5 : alignement Équipement & État --- */
+/* Tous les titres de ces menus sont placés juste après la flèche, comme Heritage Traits. */
+.equipment-panel summary,
+.status-panel summary {
+  justify-content:flex-start;
+}
+.equipment-panel .pack-summary .pack-title {
+  margin-left:0;
+}

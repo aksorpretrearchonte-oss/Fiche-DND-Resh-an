@@ -36,7 +36,7 @@ const state = {
   innate: 2, phase: 2, ethereal: 1, relentless: 1,
   deathSaves: { successes: 0, failures: 0 },
   concentration: false,
-  seriousInjuries: "", permanentInjuries: "", corruption: 0, mutationNotes: "",
+  seriousInjuries: "", permanentInjuries: "", corruption: 0, mutationNotes: "", alchemyMaterials: "",
   specterHp: 22, specterHpMax: 22,
   money: { pp: 0, gp: 0, sp: 0, bp: 0 },
   inventory: {
@@ -164,10 +164,11 @@ function renderDerived() {
   document.getElementById("hitDiceValue").textContent = `${state.hitDice} / ${state.hitDiceMax}`;
   document.getElementById("fatigueValue").textContent = state.fatigue;
   document.getElementById("corruptionValue").textContent = state.corruption;
-  const serious=document.getElementById("seriousInjuries"), permanent=document.getElementById("permanentInjuries"), mutation=document.getElementById("mutationNotes");
+  const serious=document.getElementById("seriousInjuries"), permanent=document.getElementById("permanentInjuries"), mutation=document.getElementById("mutationNotes"), alchemy=document.getElementById("alchemyMaterials");
   if(serious && document.activeElement!==serious) serious.value=state.seriousInjuries;
   if(permanent && document.activeElement!==permanent) permanent.value=state.permanentInjuries;
   if(mutation && document.activeElement!==mutation) mutation.value=state.mutationNotes;
+  if(alchemy && document.activeElement!==alchemy) alchemy.value=state.alchemyMaterials || "";
   document.getElementById("innateUses").textContent = `${state.innate} / 2`;
   document.getElementById("phaseUses").textContent = `${state.phase} / 2`;
   document.getElementById("etherealStatus").textContent = `${state.ethereal} / 1`;
@@ -336,7 +337,7 @@ document.addEventListener("click",e=>{
 });
 
 document.getElementById("shieldBonus").addEventListener("input",e=>{state.shieldBonus=Math.max(0,Number(e.target.value)||0);save();renderDerived();});
-["seriousInjuries","permanentInjuries","mutationNotes"].forEach(id=>{
+["seriousInjuries","permanentInjuries","mutationNotes","alchemyMaterials"].forEach(id=>{
   const el=document.getElementById(id);
   if(el) el.addEventListener("input",()=>{state[id]=el.value;save();});
 });

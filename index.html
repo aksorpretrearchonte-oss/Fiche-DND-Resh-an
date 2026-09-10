@@ -224,7 +224,7 @@
           </div>
         </section>
 
-        <section class="panel">
+        <section class="panel features-panel">
           <div class="section-title-row"><h2>Capacités & traits</h2></div>
 
           <details open>
@@ -256,6 +256,20 @@
                 <div><span>5</span><span>7</span><span>9</span></div>
               </div>
               <p>Any spell slot you create with this feature vanishes when you finish a Long Rest.</p>
+            </div>
+          </details>
+
+          <details>
+            <summary>Haunted Spells</summary>
+            <div class="description">
+              <p>When you reach a Sorcerer level specified in the Haunted Spells table, you thereafter always have the listed spells prepared.</p>
+              <div class="mini-table haunted-spells-table">
+                <div><span>Sorcerer Level</span><span>Spells</span></div>
+                <div><span>3</span><span>Bane, Chill Touch, Invisibility, See Invisibility, Unseen Servant</span></div>
+                <div><span>5</span><span>Fly, Speak with Dead</span></div>
+                <div><span>7</span><span>Death Ward, Greater Invisibility</span></div>
+                <div><span>9</span><span>Little Death, Telekinesis</span></div>
+              </div>
             </div>
           </details>
 
@@ -329,7 +343,6 @@
             <summary>Extreme Resilience <span>Exploration</span></summary>
             <div class="description">
               <p>If you take this trait twice, when using Power Nap, you can choose to regain a single resource that would normally refresh on a Long Rest. For example, a Sorcerer could choose to regain a Sorcery Point on a Short Rest.</p>
-              <p class="warning">Tu ne possèdes ce trait qu’une fois : l’effet « trait pris deux fois » n’est donc pas actif.</p>
             </div>
           </details>
 
@@ -384,7 +397,7 @@
           <div class="money-subtitle">PP = Platinum · GP = Gold · SP = Silver · BP = Bronze</div>
         </section>
 
-        <section class="panel">
+        <section class="panel equipment-panel">
           <div class="section-title-row"><h2>Équipement</h2></div>
           <details>
             <summary>Armes</summary>
@@ -395,12 +408,19 @@
             <div id="itemList" class="inventory-list"></div>
           </details>
           <details>
-            <summary><span class="summary-title">Dungeoneer’s Pack</span><span class="summary-right">1 pack</span></summary>
+            <summary class="pack-summary"><span class="pack-count">1 pack</span><span class="pack-title">Dungeoneer’s Pack</span></summary>
             <div class="pack-help description">
               <p><b>Contenu du pack :</b></p>
               <p>Backpack · Crowbar · Hammer · 10 Pitons · 10 Torches · Tinderbox · 10 jours de Rations · Waterskin · 15 mètres de Hempen Rope.</p>
             </div>
             <div id="packList" class="inventory-list"></div>
+          </details>
+          <details>
+            <summary>Matériaux d’alchimie</summary>
+            <div class="editable-state">
+              <textarea id="alchemyMaterials" rows="5" placeholder="Écris ici tes matériaux d’alchimie..."></textarea>
+              <small>Sauvegardé automatiquement dans ce navigateur.</small>
+            </div>
           </details>
         </section>
 
