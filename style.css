@@ -526,3 +526,16 @@ summary > .summary-right { margin-left:auto; color:var(--muted); }
 .equipment-panel .pack-summary .pack-title {
   margin-left:0;
 }
+
+
+/* --- V4.7 : pack quantity on the right --- */
+.equipment-panel .pack-summary .pack-title { margin-left:0; }
+.equipment-panel .pack-summary .pack-count {
+  position:static;
+  left:auto;
+  transform:none;
+  margin-left:auto;
+  color:var(--muted);
+  font-size:.72rem;
+  font-weight:500;
+}
