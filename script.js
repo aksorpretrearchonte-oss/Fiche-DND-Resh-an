@@ -85,7 +85,7 @@ const spells = {
 
 const specterText = `
   <p><i>Medium undead, chaotic evil</i></p><hr>
-  <p><b>Armor Class</b> 12<br><b>Hit Points</b> 22 (5d8)<br><b>Speed</b> 0 ft., fly 50 ft. (hover)</p><hr>
+  <p><b>Armor Class</b> 12<br><b>Hit Points</b> 22 (5d8)<br><b>Speed</b> 0 m, fly 15 m (hover)</p><hr>
   <p><b>STR</b> 1 (-5) &nbsp; <b>DEX</b> 14 (+2) &nbsp; <b>CON</b> 11 (+0)<br><b>INT</b> 10 (+0) &nbsp; <b>WIS</b> 10 (+0) &nbsp; <b>CHA</b> 11 (+0)</p><hr>
   <p><b>Damage Resistances</b> acid, cold, fire, lightning, thunder; bludgeoning, piercing, and slashing from nonmagical attacks<br><b>Damage Immunities</b> necrotic, poison<br><b>Condition Immunities</b> charmed, exhaustion, grappled, paralyzed, petrified, poisoned, prone, restrained, unconscious<br><b>Senses</b> darkvision 60 ft., passive Perception 10<br><b>Languages</b> understands the languages it knew in life but can't speak<br><b>Challenge</b> 1 (200 XP)</p><hr>
   <p><i><b>Incorporeal Movement.</b></i> The specter can move through other creatures and objects as if they were difficult terrain. It takes 5 (1d10) force damage if it ends its turn inside an object.</p>
