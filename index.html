@@ -68,7 +68,7 @@
               <div class="concentration-status" id="concentrationStatus">Inactive</div>
               <button class="secondary-btn" data-action="toggle-concentration">Activer</button>
               <button class="use-btn" data-action="concentration-check">🎲 Tester la concentration</button>
-              <div class="small-note" id="concentrationResult">Le bouton te demandera les dégâts subis.</div>
+              <div class="small-note" id="concentrationResult"></div>
             </div>
 
             <div class="resource-card">
@@ -117,7 +117,17 @@
                 <button class="round-btn" data-action="hd-minus">−</button>
                 <button class="round-btn" data-action="hd-plus">+</button>
               </div>
-              <div class="small-note">d6 · récupérés avec les règles de repos</div>
+              <div class="small-note">d6</div>
+            </div>
+
+            <div class="resource-card">
+              <div class="resource-label">Fatigue</div>
+              <div class="big-number" id="fatigueValue">0</div>
+              <div class="button-row">
+                <button class="round-btn" data-action="fatigue-minus">−</button>
+                <button class="round-btn" data-action="fatigue-plus">+</button>
+              </div>
+            </div>
             </div>
           </div>
         </section>
@@ -204,13 +214,15 @@
           <div class="section-title-row"><h2>Repos</h2></div>
           <div class="rest-buttons">
             <button class="rest-btn short" data-action="short-rest">
-              <span>☾</span><b>Short Rest</b><small>Ressources de repos court + récupération normale</small>
+              <span>☾</span><b>Short Rest</b><small>Récupère la moitié des dés de vie + 1 niveau de fatigue</small>
             </button>
             <button class="rest-btn long" data-action="long-rest">
-              <span>✦</span><b>Long Rest</b><small>Restaure les ressources prévues + emplacements + PV</small>
+              <span>✦</span><b>Long Rest</b><small>Restaure PV, dés de vie et ressources de repos</small>
             </button>
           </div>
-          <div class="rest-note">Power Nap reste volontaire : le bouton Short Rest ne l’active pas automatiquement.</div>
+          <button class="rest-btn power-nap-btn" data-action="power-nap">
+            <span>⌁</span><b>Power Nap</b><small>Ajoute 1 dé de vie récupéré et retire 1 niveau de fatigue</small>
+          </button>
         </section>
 
         <section class="panel">
@@ -330,7 +342,7 @@
           </details>
 
           <details>
-            <summary>Out of Phase <span>Combat</span> <span class="uses" id="phaseUses">2 / 2</span></summary>
+            <summary>Out of Phase <span>Combat</span><span class="uses" id="phaseUses">2 / 2</span></summary>
             <div class="description">
               <p>Your corporeal presence shifts and fades, softening your enemies’ ability to harm you. As a Bonus Action, for 1 minute, all creatures have Disadvantage on attack rolls against you, and you can move through other creatures’ spaces without treating them as Difficult Terrain. You can use this feature a number of times equal to your Proficiency Bonus, regaining all expended uses when you finish a Long Rest.</p>
               <button class="use-btn" data-resource="phase">Dépenser 1 utilisation</button>
@@ -338,7 +350,7 @@
           </details>
 
           <details>
-            <summary>Magical Fortification <span>Wisdom</span></summary>
+            <summary>Magical Fortification <span>Combat</span></summary>
             <div class="description">
               <p>The more that magic threatens you, the more your resilience to it increases. Choose an ability score: Strength, Dexterity, Constitution, Intelligence, Wisdom, or Charisma. You have Advantage on saving throws using that ability score against spells and other magical effects.</p>
               <p class="chosen">Score choisi : Wisdom.</p>
@@ -346,7 +358,7 @@
           </details>
 
           <details>
-            <summary>Relentless Endurance <span>Combat</span> <span class="uses" id="relentlessStatus">1 / 1</span></summary>
+            <summary>Relentless Endurance <span>Combat</span><span class="uses" id="relentlessStatus">1 / 1</span></summary>
             <div class="description">
               <p>The battles you need yet to fight are many, and death is not an option. When you are reduced to 0 Hit Points but not killed outright, you can drop to 1 Hit Point instead. You regain the use of this feature when you finish a Long Rest.</p>
               <button class="use-btn" data-resource="relentless">Dépenser l’utilisation</button>
@@ -354,7 +366,7 @@
           </details>
 
           <details>
-            <summary>Masterful Aptitude <span>Alchemy tools</span></summary>
+            <summary>Masterful Aptitude <span>Roleplay</span></summary>
             <div class="description">
               <p>Your discipline and focus give you an edge that others lack. Choose one of your skill or tool proficiencies. You have Expertise on ability checks made using the chosen proficiency.</p>
               <p class="chosen">Proficiency choisie : Alchemy tools.</p>
@@ -384,13 +396,48 @@
             <div id="itemList" class="inventory-list"></div>
           </details>
           <details>
-            <summary>Dungeoneer’s Pack <span id="packSummary">1 pack</span></summary>
+            <summary>Dungeoneer’s Pack <span class="summary-right">Pack</span></summary>
             <div class="pack-help description">
               <p><b>Contenu du pack :</b></p>
-              <p>Backpack · Crowbar · Hammer · 10 Pitons · 10 Torches · Tinderbox · 10 jours de Rations · Waterskin · 50 feet de Hempen Rope.</p>
+              <p>Backpack · Crowbar · Hammer · 10 Pitons · 10 Torches · Tinderbox · 10 jours de Rations · Waterskin · 15 mètres de Hempen Rope.</p>
             </div>
             <div id="packList" class="inventory-list"></div>
           </details>
+        </section>
+
+        <section class="panel status-panel">
+          <div class="section-title-row"><h2>État</h2></div>
+          <details>
+            <summary>Blessure grave</summary>
+            <div class="editable-state">
+              <textarea id="seriousInjuries" rows="4" placeholder="Écris ici tes blessures graves..."></textarea>
+              <small>Effacées lors d’un Long Rest.</small>
+            </div>
+          </details>
+          <details>
+            <summary>Blessure permanente</summary>
+            <div class="editable-state">
+              <textarea id="permanentInjuries" rows="4" placeholder="Écris ici tes blessures permanentes..."></textarea>
+              <small>Ces blessures ne sont pas affectées par les repos.</small>
+            </div>
+          </details>
+          <div class="corruption-box">
+            <div class="corruption-counter">
+              <div class="resource-label">Niveaux de corruption</div>
+              <div class="big-number" id="corruptionValue">0</div>
+              <div class="button-row">
+                <button class="round-btn" data-action="corruption-minus">−</button>
+                <button class="round-btn" data-action="corruption-plus">+</button>
+              </div>
+            </div>
+            <details>
+              <summary>Mutation</summary>
+              <div class="editable-state">
+                <textarea id="mutationNotes" rows="4" placeholder="Écris ici tes mutations..."></textarea>
+                <small>Les notes de mutation sont conservées jusqu’à un Long Rest.</small>
+              </div>
+            </details>
+          </div>
         </section>
 
         <section class="panel">

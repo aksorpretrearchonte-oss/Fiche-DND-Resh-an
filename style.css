@@ -410,3 +410,21 @@ summary span { color:var(--muted); font-size:.72rem; font-weight:500; margin-lef
 .money-subtitle { margin-top:8px; text-align:center; color:var(--muted); font-size:.68rem; }
 @media (max-width:800px) { .money-grid { grid-template-columns:repeat(2,1fr); } }
 @media (max-width:560px) { .money-grid { grid-template-columns:1fr 1fr; } }
+
+/* --- V4 : état, fatigue et mise en page --- */
+.power-nap-btn { width:100%; min-height:70px; text-align:left; margin-top:9px; }
+.power-nap-btn span { display:inline-block; color:var(--accent-2); font-size:1.2rem; margin-right:8px; }
+.power-nap-btn b { display:inline-block; margin-right:8px; }
+.power-nap-btn small { color:var(--muted); }
+.summary-right { margin-left:auto; }
+.status-panel details { margin-top:9px; }
+.editable-state { padding:0 14px 14px; }
+.editable-state textarea {
+  width:100%; resize:vertical; min-height:90px; background:#101016; color:var(--text);
+  border:1px solid var(--line); border-radius:9px; padding:10px; outline:none;
+}
+.editable-state textarea:focus { border-color:var(--accent); }
+.editable-state small { display:block; color:var(--muted); font-size:.68rem; margin-top:6px; }
+.corruption-box { margin-top:10px; padding:10px; border:1px solid var(--line); border-radius:11px; background:rgba(255,255,255,.018); }
+.corruption-counter { text-align:center; padding-bottom:5px; }
+.corruption-box details { margin-bottom:0; }

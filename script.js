@@ -30,12 +30,13 @@ const state = {
   hp: 20, hpMax: 20,
   ac: 10, acAuto: false, mageArmor: false, shieldBonus: 0,
   initiative: 7, initiativeAuto: true,
-  hitDice: 3, hitDiceMax: 3,
+  hitDice: 3, hitDiceMax: 3, fatigue: 0,
   slots: { 1: [false,false,false,false], 2: [false,false] },
   sorcery: [false,false,false],
   innate: 2, phase: 2, ethereal: 1, relentless: 1,
   deathSaves: { successes: 0, failures: 0 },
   concentration: false,
+  seriousInjuries: "", permanentInjuries: "", corruption: 0, mutationNotes: "",
   specterHp: 22, specterHpMax: 22,
   money: { pp: 0, gp: 0, sp: 0, bp: 0 },
   inventory: {
@@ -53,7 +54,7 @@ const state = {
     pack: [
       { name: "Backpack", count: 1 }, { name: "Crowbar", count: 1 }, { name: "Hammer", count: 1 },
       { name: "Piton", count: 10 }, { name: "Torch", count: 10 }, { name: "Tinderbox", count: 1 },
-      { name: "Ration", count: 10 }, { name: "Waterskin", count: 1 }, { name: "Hempen rope", count: 50, meta: "feet" }
+      { name: "Ration", count: 10 }, { name: "Waterskin", count: 1 }, { name: "Hempen rope", count: 15, meta: "mètres" }
     ]
   }
 };
@@ -146,10 +147,14 @@ function renderDerived() {
   document.getElementById("spellDcSmall").textContent = dc;
   document.getElementById("spellAttackSmall").textContent = signed(attack);
   const mageButton=document.querySelector('[data-action="mage-armor"]');
-  if (state.acAuto) {
-    state.ac = (state.mageArmor ? 13 : 10) + dex + Number(state.shieldBonus || 0);
-    document.getElementById("acModeLabel").textContent = state.mageArmor ? "Automatique · Mage Armor" : "Automatique · base";
-  } else document.getElementById("acModeLabel").textContent = "Mode manuel";
+  if (state.acAuto && state.mageArmor) {
+    state.ac = 13 + dex + Number(state.shieldBonus || 0);
+    document.getElementById("acModeLabel").textContent = "Automatique · Mage Armor";
+  } else if (state.acAuto) {
+    document.getElementById("acModeLabel").textContent = "Mode automatique · base";
+  } else {
+    document.getElementById("acModeLabel").textContent = "Mode manuel";
+  }
   if(mageButton) mageButton.textContent = state.mageArmor ? "Retirer Mage Armor" : "Activer Mage Armor";
   document.getElementById("acValue").textContent = state.ac;
   document.getElementById("initiativeValue").textContent = signed(state.initiative);
@@ -157,6 +162,12 @@ function renderDerived() {
   document.getElementById("hpMaxValue").textContent = state.hpMax;
   document.getElementById("hpBar").style.width = `${Math.max(0, Math.min(100, state.hp / state.hpMax * 100))}%`;
   document.getElementById("hitDiceValue").textContent = `${state.hitDice} / ${state.hitDiceMax}`;
+  document.getElementById("fatigueValue").textContent = state.fatigue;
+  document.getElementById("corruptionValue").textContent = state.corruption;
+  const serious=document.getElementById("seriousInjuries"), permanent=document.getElementById("permanentInjuries"), mutation=document.getElementById("mutationNotes");
+  if(serious && document.activeElement!==serious) serious.value=state.seriousInjuries;
+  if(permanent && document.activeElement!==permanent) permanent.value=state.permanentInjuries;
+  if(mutation && document.activeElement!==mutation) mutation.value=state.mutationNotes;
   document.getElementById("innateUses").textContent = `${state.innate} / 2`;
   document.getElementById("phaseUses").textContent = `${state.phase} / 2`;
   document.getElementById("etherealStatus").textContent = `${state.ethereal} / 1`;
@@ -227,8 +238,6 @@ function renderInventory() {
   renderInventoryList("weaponList",state.inventory.weapons,"weapons");
   renderInventoryList("itemList",state.inventory.items,"items");
   renderInventoryList("packList",state.inventory.pack,"pack");
-  const total=state.inventory.pack.reduce((sum,x)=>sum+x.count,0);
-  document.getElementById("packSummary").textContent=`${total} éléments`;
 }
 
 function log(message) { const el=document.getElementById("log"), line=document.createElement("div"); line.textContent=`${new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})} — ${message}`; el.prepend(line); }
@@ -236,12 +245,25 @@ function log(message) { const el=document.getElementById("log"), line=document.c
 function renderAll(){ renderAbilities(); renderModifiers(); renderDerived(); renderSlots(); renderSpells(); renderInventory(); }
 
 function spend(resource){ if(state[resource]>0){state[resource]--;log(`Utilisation dépensée : ${resource}.`);save();renderDerived();} }
-function shortRest(){ log("Short Rest : repos court effectué. Power Nap reste optionnel."); save(); }
-function powerNap(){ state.hitDice=Math.min(state.hitDiceMax,state.hitDice+1); log("Power Nap : 1 dé de vie récupéré. Réduction de l’Exhaustion à appliquer manuellement."); save();renderDerived(); }
+function shortRest(){
+  const regained=Math.ceil(state.hitDiceMax/2);
+  state.hitDice=Math.min(state.hitDiceMax,state.hitDice+regained);
+  state.fatigue=Math.max(0,state.fatigue-1);
+  log(`Short Rest : ${regained} dé(s) de vie récupéré(s) et 1 niveau de fatigue retiré.`);
+  save();renderDerived();
+}
+function powerNap(){
+  state.hitDice=Math.min(state.hitDiceMax,state.hitDice+1);
+  state.fatigue=Math.max(0,state.fatigue-1);
+  log("Power Nap : 1 dé de vie supplémentaire récupéré et 1 niveau de fatigue retiré.");
+  save();renderDerived();
+}
 function longRest(){
-  state.hp=state.hpMax; state.hitDice=state.hitDiceMax; state.slots[1]=state.slots[1].map(()=>false); state.slots[2]=state.slots[2].map(()=>false); state.sorcery=state.sorcery.map(()=>false);
+  state.hp=state.hpMax; state.hitDice=state.hitDiceMax; state.fatigue=0;
+  state.slots[1]=state.slots[1].map(()=>false); state.slots[2]=state.slots[2].map(()=>false); state.sorcery=state.sorcery.map(()=>false);
   state.innate=2;state.phase=2;state.ethereal=1;state.relentless=1;state.deathSaves={successes:0,failures:0};state.concentration=false;state.specterHp=state.specterHpMax;
-  log("Long Rest : PV, dés de vie, emplacements, points de sorcellerie et utilisations Long Rest restaurés.");save();renderAll();
+  state.seriousInjuries=""; state.mutationNotes="";
+  log("Long Rest : PV, dés de vie, fatigue et ressources restaurés. Blessures graves et mutations effacées.");save();renderAll();
 }
 function resetSheet(){localStorage.removeItem(STORAGE_KEY);location.reload();}
 function rollD20(){return Math.floor(Math.random()*20)+1;}
@@ -268,13 +290,20 @@ document.addEventListener("click",e=>{
       case "hp-plus":state.hp=Math.min(state.hpMax,state.hp+1);break;
       case "ac-minus":if(!state.acAuto)state.ac--;break;
       case "ac-plus":if(!state.acAuto)state.ac++;break;
-      case "ac-auto":state.acAuto=true;state.mageArmor=false;break;
-      case "mage-armor":state.acAuto=true;state.mageArmor=!state.mageArmor;break;
+      case "ac-auto":state.acAuto=true;state.mageArmor=false;state.ac=10+Number(state.shieldBonus||0);break;
+      case "mage-armor":
+        if(state.mageArmor){ state.mageArmor=false; state.acAuto=false; state.ac=10+Number(state.shieldBonus||0); }
+        else { state.mageArmor=true; state.acAuto=true; }
+        break;
       case "init-minus":state.initiative--;state.initiativeAuto=false;break;
       case "init-plus":state.initiative++;state.initiativeAuto=false;break;
       case "init-auto":state.initiative=mod(abilities.DEX.score)+mod(abilities.CHA.score)+2;state.initiativeAuto=true;break;
       case "hd-minus":state.hitDice=Math.max(0,state.hitDice-1);break;
       case "hd-plus":state.hitDice=Math.min(state.hitDiceMax,state.hitDice+1);break;
+      case "fatigue-minus":state.fatigue=Math.max(0,state.fatigue-1);break;
+      case "fatigue-plus":state.fatigue++;break;
+      case "corruption-minus":state.corruption=Math.max(0,state.corruption-1);break;
+      case "corruption-plus":state.corruption++;break;
       case "short-rest":shortRest();return;
       case "long-rest":longRest();return;
       case "power-nap":powerNap();return;
@@ -307,3 +336,7 @@ document.addEventListener("click",e=>{
 });
 
 document.getElementById("shieldBonus").addEventListener("input",e=>{state.shieldBonus=Math.max(0,Number(e.target.value)||0);save();renderDerived();});
+["seriousInjuries","permanentInjuries","mutationNotes"].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el) el.addEventListener("input",()=>{state[id]=el.value;save();});
+});
