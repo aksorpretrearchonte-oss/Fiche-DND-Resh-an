@@ -539,3 +539,37 @@ summary > .summary-right { margin-left:auto; color:var(--muted); }
   font-size:.72rem;
   font-weight:500;
 }
+
+/* --- V4.8 : armes dynamiques + bulles d'aide des propriétés --- */
+.weapon-row { grid-template-columns:minmax(240px,1fr) auto auto auto; align-items:center; }
+.weapon-main { min-width:0; }
+.weapon-properties { display:flex !important; flex-wrap:wrap; gap:5px; margin-top:7px !important; overflow:visible; }
+.weapon-property {
+  position:relative; display:inline-flex; align-items:center; padding:3px 7px;
+  border:1px solid rgba(202,169,255,.35); border-radius:999px; background:rgba(202,169,255,.07);
+  color:var(--accent-2); font:inherit; font-size:.64rem; line-height:1.25; cursor:help;
+}
+.weapon-property:hover, .weapon-property:focus, .weapon-property.tooltip-open { border-color:var(--accent); background:rgba(202,169,255,.14); outline:none; }
+.weapon-tooltip {
+  display:none !important; position:absolute; z-index:30; left:0; bottom:calc(100% + 8px); width:min(360px,75vw);
+  padding:10px 11px; border:1px solid var(--line); border-radius:9px; background:#111119;
+  color:var(--text) !important; box-shadow:0 12px 30px rgba(0,0,0,.45); font-size:.72rem !important;
+  line-height:1.45; white-space:normal;
+}
+.weapon-tooltip b { display:block; margin-bottom:4px; color:var(--accent-2); }
+.weapon-property:hover .weapon-tooltip, .weapon-property:focus .weapon-tooltip, .weapon-property.tooltip-open .weapon-tooltip { display:block !important; }
+@media (max-width:800px) {
+  .weapon-row { grid-template-columns:1fr auto; }
+  .weapon-row .inventory-stat { grid-column:auto; }
+  .weapon-tooltip { position:fixed; left:12px; right:12px; bottom:18px; width:auto; }
+}
+
+
+/* --- V4.9 : tooltips armes non rognés + Origin Feats --- */
+.equipment-panel .weapons-details { overflow: visible; position: relative; z-index: 5; }
+.equipment-panel .weapons-details[open] { z-index: 20; }
+.equipment-panel .weapon-row { position: relative; overflow: visible; }
+.equipment-panel .inventory-list { overflow: visible; }
+.weapon-tooltip { z-index: 100; }
+.origin-feats-panel summary { justify-content: flex-start; }
+.origin-feats-panel summary > span { margin-left: auto; }

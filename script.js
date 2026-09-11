@@ -41,15 +41,18 @@ const state = {
   money: { pp: 0, gp: 0, sp: 0, bp: 0 },
   inventory: {
     weapons: [
-      { name: "Spear", count: 1, meta: "Thrown / Versatile", attack: "+1", damage: "1d6", help: "Thrown / Versatile" },
-      { name: "Dagger", count: 2, meta: "Finesse / Light / Thrown", attack: "+4", damage: "1d4", help: "Finesse / Light / Thrown" }
+      { name: "Spear", count: 1, weaponKey: "spear" },
+      { name: "Dagger", count: 2, weaponKey: "dagger" },
+      { name: "Light Crossbow", count: 1, weaponKey: "lightCrossbow" }
     ],
     items: [
       { name: "Arcane focus (ring)", count: 1, help: "Arcane focus (ring)." },
       { name: "Alchemy tools", count: 1, bonus: "+4 au jet de caractéristique", help: "Kit d’alchimie : +4 au jet de caractéristique." },
       { name: "Book", count: 1, meta: "History", help: "Book (History)." },
       { name: "Magnifying glass", count: 1, help: `This lens allows a closer look at small objects. It is also useful as a substitute for flint and steel when starting fires. Lighting a fire with a magnifying glass requires light as bright as sunlight to focus, tinder to ignite, and about 5 minutes for the fire to ignite. A magnifying glass grants advantage on any ability check made to appraise or inspect an item that is small or highly detailed.` },
-      { name: "Parchment", count: 10, help: "Parchment." }
+      { name: "Parchment", count: 10, help: "Parchment." },
+      { name: "Crossbow Bolt", count: 10, meta: "Munitions pour Light Crossbow", help: "Carreaux utilisés comme munitions pour la Light Crossbow." },
+      { name: "Mystery Key", count: 1, meta: "Wondrous Item, Common", help: `A question mark is worked into the head of this key. The key has a 5 percent chance of unlocking any lock into which it’s inserted. Once it unlocks something, the key disappears.` }
     ],
     pack: [
       { name: "Backpack", count: 1 }, { name: "Crowbar", count: 1 }, { name: "Hammer", count: 1 },
@@ -61,7 +64,7 @@ const state = {
 
 const spells = {
   cantrips: [
-    { name:"Frostbite", meta:"1 action · 60 feet · V, S · Instantaneous", text:`You cause numbing frost to form on one creature that you can see within range. The target must make a Constitution saving throw. On a failed save, the target takes 1d6 cold damage, and it has disadvantage on the next weapon attack roll it makes before the end of its next turn.<br><br><b>At Higher Levels.</b> The spell’s damage increases by 1d6 when you reach 5th level (2d6), 11th level (3d6), and 17th level (4d6).` },
+    { name:"True Strike", meta:"Action · Self · S, M (a weapon with which you have proficiency and that is worth 1+ CP) · Instantaneous", text:`Guided by a flash of magical insight, you make one attack with the weapon used in the spell’s casting. The attack uses your spellcasting ability for the attack and damage rolls instead of using Strength or Dexterity. If the attack deals damage, it can be Radiant damage or the weapon’s normal damage type (your choice).<br><br><b>Cantrip Upgrade.</b> Whether you deal Radiant damage or the weapon’s normal damage type, the attack deals extra Radiant damage when you reach levels 5 (1d6), 11 (2d6), and 17 (3d6).` },
     { name:"Mage Hand", meta:"1 action · 9 m · V, S · 1 minute", text:`Une main spectrale apparaît à un point précis choisi à portée. La main expire à la fin de la durée du sort ou si elle est révoquée au prix d'une action. La main disparaît si elle se retrouve à plus de 9 mètres du lanceur de sorts ou si ce sort est jeté une nouvelle fois.<br><br>Le lanceur de sorts peut utiliser son action pour contrôler la main. La main peut manipuler un objet, ouvrir une porte ou un contenant non verrouillé, ranger ou récupérer un objet d'un contenant ouvert, ou bien verser le contenu d'une fiole. La main peut être déplacée jusqu'à 9 mètres à chaque fois que vous l'utilisez.<br><br>La main ne peut attaquer, activer des objets magiques ou transporter plus de 5 kg.` },
     { name:"Mind Sliver", meta:"1 action · 60 feet · V · 1 round", text:`You drive a disorienting spike of psychic energy into the mind of one creature you can see within range. The target must succeed on an Intelligence saving throw or take 1d6 psychic damage and subtract 1d4 from the next saving throw it makes before the end of your next turn.<br><br>This spell's damage increases by 1d6 when you reach certain levels: 5th level (2d6), 11th level (3d6), and 17th level (4d6).` },
     { name:"Minor Illusion", meta:"1 action · 9 m · S, M (un peu de laine de mouton) · 1 minute", text:`Le lanceur de sorts crée un son ou l'image d'un objet à portée pendant une minute. Cette illusion se termine également si elle est révoquée au prix d'une action ou si ce sort est lancé une nouvelle fois.<br><br>Si l'illusion est un son, le volume peut aller d'un simple chuchotement à un cri. Il peut s'agir de votre voix, de la voix de quelqu'un d'autre, du rugissement d'un lion, d'un roulement de tambours, ou tout autre son que vous choisissez. Le son peut autant ne pas diminuer en intensité pendant la durée du sort qu'être discret et produit à différents instants dans cet intervalle de temps.<br><br>Si l'illusion est une image ou un objet (comme une chaise, des traces de pas boueuses ou un petit coffre) elle ne peut pas être plus large qu'un cube de 1,50 mètre d'arête. Cette image ne peut produire de son, lumière, odeur ou tout autre effet sensoriel. Une interaction physique avec l'image révèle l'illusion, car elle peut être traversée par n'importe quoi.<br><br>Si une créature utilise une action pour examiner le son ou l'image, elle peut comprendre qu'il s'agit d'une illusion grâce à un jet d'Intelligence (Investigation) contre le DD de sauvegarde de votre sort. Si une créature discerne l'illusion pour ce qu'elle est, l'illusion s'évanouit pour la créature.` },
@@ -83,6 +86,68 @@ const spells = {
   ]
 };
 
+
+const weaponProperties = {
+  Ammunition: `You can use a weapon that has the Ammunition property to make a ranged attack only if you have ammunition to fire from it. The type of ammunition required is specified with the weapon’s range. Each attack expends one piece of ammunition. Drawing the ammunition is part of the attack (you need a free hand to load a one-handed weapon). After a fight, you can spend 1 minute to recover half the ammunition (round down) you used in the fight; the rest is lost.`,
+  Loading: `You can fire only one piece of ammunition from a Loading weapon when you use an action, a Bonus Action, or a Reaction to fire it, regardless of the number of attacks you can normally make.`,
+  Range: `A Range weapon has a range in parentheses after the Ammunition or Thrown property. The range lists two numbers. The first is the weapon’s normal range, and the second is the weapon’s long range. When attacking a target beyond normal range, you have Disadvantage on the attack roll. You can’t attack a target beyond the long range.`,
+  "Two-Handed": `A Two-Handed weapon requires two hands when you attack with it.`,
+  Slow: `If you hit a creature with this weapon and deal damage to it, you can reduce its Speed by 10 feet until the start of your next turn. If the creature is hit more than once by weapons that have this property, the Speed reduction doesn't exceed 10 feet.`,
+  Finesse: `When making an attack with a Finesse weapon, use your choice of your Strength or Dexterity modifier for the attack and damage rolls. You must use the same modifier for both rolls.`,
+  Light: `When you take the Attack action on your turn and attack with a Light weapon, you can make one extra attack as a Bonus Action later on the same turn. That extra attack must be made with a different Light weapon, and you don’t add your ability modifier to the extra attack’s damage unless that modifier is negative.`,
+  Thrown: `If a weapon has the Thrown property, you can throw the weapon to make a ranged attack, and you can draw that weapon as part of the attack. If the weapon is a Melee weapon, use the same ability modifier for the attack and damage rolls that you use for a melee attack with the weapon.`,
+  Nick: `When you make the extra attack of the Light property, you can make it as part of the Attack action instead of as a Bonus Action. You can make this extra attack only once per turn.`,
+  Versatile: `A Versatile weapon can be used with one or two hands. A damage value in parentheses appears with the property. The weapon deals that damage when used with two hands to make a melee attack.`,
+  Sap: `If you hit a creature with this weapon, that creature has Disadvantage on its next attack roll before the start of your next turn.`
+};
+
+const weaponDefinitions = {
+  spear: {
+    name: "Spear", damageDie: "1d6", versatileDie: "1d8", damageType: "Piercing", abilities: ["STR"],
+    properties: [
+      { name: "Thrown", detail: "6/18 m" },
+      { name: "Versatile", detail: "1d8" },
+      { name: "Sap" }
+    ]
+  },
+  dagger: {
+    name: "Dagger", damageDie: "1d4", damageType: "Piercing", abilities: ["STR", "DEX"],
+    properties: [
+      { name: "Finesse" },
+      { name: "Light" },
+      { name: "Thrown", detail: "6/18 m" },
+      { name: "Nick" }
+    ]
+  },
+  lightCrossbow: {
+    name: "Light Crossbow", damageDie: "1d8", damageType: "Piercing", abilities: ["DEX"],
+    properties: [
+      { name: "Ammunition", detail: "24/98 m" },
+      { name: "Loading" },
+      { name: "Range", detail: "24/98 m" },
+      { name: "Two-Handed" },
+      { name: "Slow" }
+    ]
+  }
+};
+
+function bestWeaponModifier(def) {
+  return Math.max(...def.abilities.map(key => mod(abilities[key].score)));
+}
+
+function weaponDamage(die, modifier) {
+  if (modifier === 0) return die;
+  return `${die}${modifier > 0 ? "+" : ""}${modifier}`;
+}
+
+function renderWeaponProperties(properties) {
+  return `<span class="weapon-properties">${properties.map(prop => {
+    const tooltip = weaponProperties[prop.name] || "";
+    const label = `${prop.name}${prop.detail ? ` (${prop.detail})` : ""}`;
+    return `<button type="button" class="weapon-property" data-weapon-property="${prop.name}" aria-label="Aide : ${prop.name}"><span>${label}</span><span class="weapon-tooltip" role="tooltip"><b>${prop.name}</b>${tooltip}</span></button>`;
+  }).join("")}</span>`;
+}
+
 const specterText = `
   <p><i>Medium undead, chaotic evil</i></p><hr>
   <p><b>Armor Class</b> 12<br><b>Hit Points</b> 22 (5d8)<br><b>Speed</b> 0 m, fly 15 m (hover)</p><hr>
@@ -103,7 +168,7 @@ function save() {
 function load() {
   let raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) raw = localStorage.getItem("reshan-dnd-sheet-v1");
-  if (!raw) return;
+  if (!raw) { migrateInventory(); return; }
   try {
     const saved = JSON.parse(raw);
     if (saved.state) Object.assign(state, saved.state);
@@ -111,6 +176,26 @@ function load() {
       if (saved.abilities[k]?.score != null) abilities[k].score = saved.abilities[k].score;
     });
   } catch (_) {}
+  migrateInventory();
+}
+
+function migrateInventory() {
+  if (!state.inventory) state.inventory = clone({ weapons: [], items: [], pack: [] });
+  if (!Array.isArray(state.inventory.weapons)) state.inventory.weapons = [];
+  const previousWeapons = state.inventory.weapons;
+  const countFor = (name, fallback) => previousWeapons.find(w => w.name === name || w.weaponKey === fallback)?.count ?? (fallback === "dagger" ? 2 : 1);
+  state.inventory.weapons = [
+    { name:"Spear", count:countFor("Spear","spear"), weaponKey:"spear" },
+    { name:"Dagger", count:countFor("Dagger","dagger"), weaponKey:"dagger" },
+    { name:"Light Crossbow", count:countFor("Light Crossbow","lightCrossbow"), weaponKey:"lightCrossbow" }
+  ];
+  if (!Array.isArray(state.inventory.items)) state.inventory.items = [];
+  if (!state.inventory.items.some(item => item.name === "Crossbow Bolt")) {
+    state.inventory.items.push({ name:"Crossbow Bolt", count:10, meta:"Munitions pour Light Crossbow", help:"Carreaux utilisés comme munitions pour la Light Crossbow." });
+  }
+  if (!state.inventory.items.some(item => item.name === "Mystery Key")) {
+    state.inventory.items.push({ name:"Mystery Key", count:1, meta:"Wondrous Item, Common", help:`A question mark is worked into the head of this key. The key has a 5 percent chance of unlocking any lock into which it’s inserted. Once it unlocks something, the key disappears.` });
+  }
 }
 
 function renderAbilities() {
@@ -219,13 +304,31 @@ function renderSpells() {
 
 function renderInventoryList(id, list, type) {
   const el=document.getElementById(id); if(!el)return;
-  el.innerHTML=list.map((item,i)=>`
-    <div class="inventory-row">
-      <div class="inventory-main"><strong>${item.name}</strong>${item.meta?`<span>${item.meta}</span>`:""}</div>
-      <div class="inventory-controls"><button class="round-btn" data-inv-type="${type}" data-inv-index="${i}" data-inv-delta="-1">−</button><strong>${item.count}</strong><button class="round-btn" data-inv-type="${type}" data-inv-index="${i}" data-inv-delta="1">+</button></div>
-      ${item.attack?`<div class="inventory-stat">Attaque <b>${item.attack}</b></div>`:""}${item.damage?`<div class="inventory-stat">Dégâts <b>${item.damage}</b></div>`:""}${item.bonus?`<div class="inventory-stat"><b>${item.bonus}</b></div>`:""}
-      ${item.help?`<button class="spell-btn" data-item-help="${type}:${i}">Aide</button>`:""}
-    </div>`).join("");
+  el.innerHTML=list.map((item,i)=>{
+    if(type === "weapons") {
+      const def=weaponDefinitions[item.weaponKey];
+      if(def) {
+        const abilityMod=bestWeaponModifier(def);
+        const attack=signed(abilityMod + 2);
+        let damage=weaponDamage(def.damageDie, abilityMod);
+        if(def.versatileDie) damage += ` · 2 mains ${weaponDamage(def.versatileDie, abilityMod)}`;
+        return `
+          <div class="inventory-row weapon-row">
+            <div class="inventory-main weapon-main"><strong>${def.name}</strong><span>${def.damageType}</span>${renderWeaponProperties(def.properties)}</div>
+            <div class="inventory-controls"><button class="round-btn" data-inv-type="${type}" data-inv-index="${i}" data-inv-delta="-1">−</button><strong>${item.count}</strong><button class="round-btn" data-inv-type="${type}" data-inv-index="${i}" data-inv-delta="1">+</button></div>
+            <div class="inventory-stat">Attaque <b>${attack}</b></div>
+            <div class="inventory-stat">Dégâts <b>${damage}</b></div>
+          </div>`;
+      }
+    }
+    return `
+      <div class="inventory-row">
+        <div class="inventory-main"><strong>${item.name}</strong>${item.meta?`<span>${item.meta}</span>`:""}</div>
+        <div class="inventory-controls"><button class="round-btn" data-inv-type="${type}" data-inv-index="${i}" data-inv-delta="-1">−</button><strong>${item.count}</strong><button class="round-btn" data-inv-type="${type}" data-inv-index="${i}" data-inv-delta="1">+</button></div>
+        ${item.attack?`<div class="inventory-stat">Attaque <b>${item.attack}</b></div>`:""}${item.damage?`<div class="inventory-stat">Dégâts <b>${item.damage}</b></div>`:""}${item.bonus?`<div class="inventory-stat"><b>${item.bonus}</b></div>`:""}
+        ${item.help?`<button class="spell-btn" data-item-help="${type}:${i}">Aide</button>`:""}
+      </div>`;
+  }).join("");
 }
 
 function renderMoney() {
@@ -318,6 +421,13 @@ document.addEventListener("click",e=>{
       case "close-modal":document.getElementById("modal").classList.add("hidden");return;
     }
     save();renderAll();return;
+  }
+
+  const weaponProperty=e.target.closest("[data-weapon-property]");
+  if(weaponProperty){
+    document.querySelectorAll(".weapon-property.tooltip-open").forEach(el=>{if(el!==weaponProperty)el.classList.remove("tooltip-open");});
+    weaponProperty.classList.toggle("tooltip-open");
+    return;
   }
 
   const abilityButton=e.target.closest("[data-ability]");
